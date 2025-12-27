@@ -1,28 +1,4 @@
-#include <string>
-#include <chrono>
-#include <algorithm>
-
-enum class EventType {
-  MARKET,
-  SIGNAL,
-  ORDER,
-  FILL
-};
-
-enum class SignalType {
-  LONG,
-  SHORT
-};
-
-enum class OrderType {
-  MKT,
-  LMT
-};
-
-enum class DirectionType {
-  BUY,
-  SELL
-};
+#include "event.h"
 
 class Event {
   /*
@@ -36,18 +12,11 @@ class Event {
     virtual EventType getEventType() const = 0;
 };
 
-class MarketEvent : public Event {
-  /*
-  Handles the event of receiving a new market update with 
-  corresponding bars.
-  */
+  MarketEvent::MarketEvent() {}
+  EventType MarketEvent::getEventType() const { 
+    return EventType::MARKET; 
+  }
 
-  public: 
-    EventType getEventType() const override { 
-      return EventType::MARKET; 
-    }
-
-};
 
 class SignalEvent : public Event {
   /*

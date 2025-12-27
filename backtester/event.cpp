@@ -1,5 +1,6 @@
 #include <string>
 #include <chrono>
+#include <algorithm>
 
 enum class EventType {
   MARKET,
@@ -72,7 +73,7 @@ class SignalEvent : public Event {
     SignalEvent(std::string symbol, 
       std::chrono::system_clock::time_point datetime,
       SignalType signalType)
-      : symbol(symbol), datetime(datetime), signalType(signalType) {
+        : symbol(symbol), datetime(datetime), signalType(signalType) {
 
       }
 };
@@ -105,7 +106,79 @@ class OrderEvent : public Event {
     OrderType orderType,
     unsigned long quantity,
     DirectionType direction)
-      : symbol(symbol), orderType(orderType), quantity(quantity), direction(direction){
+      : symbol(symbol), orderType(orderType), quantity(quantity), direction(direction) {
 
       }
+};
+
+class FillEvent : public Event {
+  /*
+  Encapsulates the notion of a Filled Order, as returned
+  from a brokerage. Stores the quantity of an instrument
+  actually filled and at what price. In addition, stores
+  the commission of the trade from the brokerage.
+  */
+
+  public:
+    EventType getEventType() const override { 
+      return EventType::FILL; 
+    }
+
+    std::chrono::system_clock::time_point timeIndex;
+    std::string symbol;
+    std::string exchange;
+    unsigned long quantity;
+    DirectionType direction;
+    long double fillCost;
+    long double commission;
+
+    static double calcCommission(unsigned long quantity, long double fillCost) {
+      /*
+      Calculates the fees of trading based on Interactive Brokers 
+      'Fixed' pricing for US Stocks (SmartRouted).
+      
+      Source: https://www.interactivebrokers.com/en/pricing/commissions-stocks.php
+      */
+
+      double commPerShare = 0.005;
+      double minComm = 1.00;
+      double maxPercent = 1.0;
+
+      double baseComm = std::max(minComm, commPerShare * quantity);
+
+      double tradeVal = quantity * fillCost;
+      double maxCost = (maxPercent / 100.0) * tradeVal;
+
+      double fullCost = std::min(baseComm, maxCost);
+
+      return fullCost;
+    }
+
+    /*
+    If commission is not provided, the Fill object will
+    calculate it based on the trade size and Interactive
+    Brokers fees.
+
+    Parameters:
+    timeindex - The bar-resolution when the order was filled.
+    symbol - The instrument which was filled.
+    exchange - The exchange where the order was filled.
+    quantity - The filled quantity.
+    direction - The direction of fill ('BUY' or 'SELL')
+    fill_cost - The holdings value in dollars.
+    commission - An optional commission sent from IB.
+    */
+    FillEvent(std::chrono::system_clock::time_point timeIndex,
+    std::string symbol,
+    std::string exchange,
+    unsigned long quantity,
+    DirectionType direction,
+    long double fillCost,
+    long double commission = 0) 
+      : timeIndex(timeIndex), symbol(symbol), exchange(exchange), quantity(quantity), 
+        direction(direction), fillCost(fillCost), commission(commission) {
+          if(this->commission == 0) {
+            this->commission = calcCommission(quantity, fillCost);
+          }
+        }
 };

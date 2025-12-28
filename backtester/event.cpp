@@ -23,7 +23,7 @@ EventType OrderEvent::getEventType() const {
 }
 
 // Commission calculation 
-double calcCommission(unsigned long quantity, long double fillCost) {
+double FillEvent::calcCommission(unsigned long quantity, long double fillCost) {
   /*
   Calculates the fees of trading based on Interactive Brokers 
   'Fixed' pricing for US Stocks (SmartRouted).
@@ -59,4 +59,3 @@ direction(direction), fillCost(fillCost), commission(commission) {
 EventType FillEvent::getEventType() const {
   return EventType::FILL;
 }
-  

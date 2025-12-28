@@ -43,12 +43,11 @@ class MarketEvent : public Event {
   Handles the event of receiving a new market update with 
   corresponding bars.
   */
+
   public: 
     MarketEvent();
     EventType getEventType() const override;
 };
-
-
 
 class SignalEvent : public Event {
   /*
@@ -57,26 +56,20 @@ class SignalEvent : public Event {
   */
 
   public: 
-    EventType getEventType() const override { 
-      return EventType::SIGNAL; 
-    }
-
-    std::string symbol;
-    std::chrono::system_clock::time_point datetime;
-    SignalType signalType;
-
     /*
     Parameters:
     symbol - The ticker symbol, e.g. 'GOOG'.
     datetime - The timestamp at which the signal was generated.
     signalType - 'LONG' or 'SHORT'.
     */
-    SignalEvent(std::string symbol, 
-      std::chrono::system_clock::time_point datetime,
-      SignalType signalType)
-        : symbol(symbol), datetime(datetime), signalType(signalType) {
+   
+    SignalEvent(const std::string& symbol, std::chrono::system_clock::time_point datetime, 
+      SignalType signalType);
+    EventType getEventType() const override;
 
-      }
+    std::string symbol;
+    std::chrono::system_clock::time_point datetime;
+    SignalType signalType;
 };
 
 class OrderEvent : public Event {
@@ -87,15 +80,6 @@ class OrderEvent : public Event {
   */
 
   public:
-    EventType getEventType() const override { 
-      return EventType::ORDER; 
-    }
-
-    std::string symbol;
-    OrderType orderType;
-    unsigned long quantity;
-    DirectionType direction;
-
     /*
     Parameters:
     symbol - The instrument to trade.
@@ -103,13 +87,14 @@ class OrderEvent : public Event {
     quantity - Non-negative integer for quantity.
     direction - 'BUY' or 'SELL' for long or short.
     */
-    OrderEvent(std::string symbol, 
-    OrderType orderType,
-    unsigned long quantity,
-    DirectionType direction)
-      : symbol(symbol), orderType(orderType), quantity(quantity), direction(direction) {
+    OrderEvent(const std::string& symbol, OrderType orderType, unsigned long quantity, 
+      DirectionType direction);
+    EventType getEventType() const override;
 
-      }
+    std::string symbol;
+    OrderType orderType;
+    unsigned long quantity;
+    DirectionType direction;
 };
 
 class FillEvent : public Event {
@@ -121,40 +106,6 @@ class FillEvent : public Event {
   */
 
   public:
-    EventType getEventType() const override { 
-      return EventType::FILL; 
-    }
-
-    std::chrono::system_clock::time_point timeIndex;
-    std::string symbol;
-    std::string exchange;
-    unsigned long quantity;
-    DirectionType direction;
-    long double fillCost;
-    long double commission;
-
-    static double calcCommission(unsigned long quantity, long double fillCost) {
-      /*
-      Calculates the fees of trading based on Interactive Brokers 
-      'Fixed' pricing for US Stocks (SmartRouted).
-      
-      Source: https://www.interactivebrokers.com/en/pricing/commissions-stocks.php
-      */
-
-      double commPerShare = 0.005;
-      double minComm = 1.00;
-      double maxPercent = 1.0;
-
-      double baseComm = std::max(minComm, commPerShare * quantity);
-
-      double tradeVal = quantity * fillCost;
-      double maxCost = (maxPercent / 100.0) * tradeVal;
-
-      double fullCost = std::min(baseComm, maxCost);
-
-      return fullCost;
-    }
-
     /*
     If commission is not provided, the Fill object will
     calculate it based on the trade size and Interactive
@@ -169,17 +120,18 @@ class FillEvent : public Event {
     fill_cost - The holdings value in dollars.
     commission - An optional commission sent from IB.
     */
-    FillEvent(std::chrono::system_clock::time_point timeIndex,
-    std::string symbol,
-    std::string exchange,
-    unsigned long quantity,
-    DirectionType direction,
-    long double fillCost,
-    long double commission = 0) 
-      : timeIndex(timeIndex), symbol(symbol), exchange(exchange), quantity(quantity), 
-        direction(direction), fillCost(fillCost), commission(commission) {
-          if(this->commission == 0) {
-            this->commission = calcCommission(quantity, fillCost);
-          }
-        }
+    FillEvent(std::chrono::system_clock::time_point timeIndex, std::string symbol,
+    std::string exchange, unsigned long quantity, DirectionType direction,
+    long double fillCost, long double commission = 0);
+    EventType getEventType() const override;
+
+    static double calcCommission(unsigned long quantity, long double fillCost);
+
+    std::chrono::system_clock::time_point timeIndex;
+    std::string symbol;
+    std::string exchange;
+    unsigned long quantity;
+    DirectionType direction;
+    long double fillCost;
+    long double commission;
 };

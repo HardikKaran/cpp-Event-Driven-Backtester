@@ -50,7 +50,19 @@ class DataHandler {
 };
 
 class HistoricCSVDataHandler : public DataHandler {
+  /*
+  HistoricCSVDataHandler is designed to read CSV files for
+  each requested symbol from disk and provide an interface
+  to obtain the "latest" bar in a manner identical to a live
+  trading interface. 
+  */
   public:
+    /*
+    Parameters:
+    events - The Event Queue.
+    csvDir - Absolute directory path to the CSV files.
+    symbolList - A list of symbol strings.
+    */
     HistoricCSVDataHandler(std::queue<std::shared_ptr<Event>>& events, 
       std::string csvDir, std::vector<std::string> symbolList);
 

@@ -1,26 +1,27 @@
 #pragma once
 
+
 #include <vector>
 #include <map>
 #include <string>
 #include <queue>
 #include <memory>
-#include <fstream>
-#include <sstream>
-#include <chrono>
-#include <algorithm>
-#include <utility>
+#include <ctime>
+#include <set>
+
 
 #include <event.h>
 
 struct Bar {
   std::string symbol;
-  std::chrono::year_month_day date;
+  time_t date;
   double open;
   double high;
   double low;
   double close;
-  double vol;
+  long vol;
+  double adjClose;
+  double returns;
 };
 
 class DataHandler {
@@ -78,8 +79,12 @@ class HistoricCSVDataHandler : public DataHandler {
     std::map<std::string, std::vector<Bar>> latestSymbolData;
     bool contBacktest = true;
 
+    // Helper functions for initialisation
     void openConvertCSVFiles();
+    bool parseCSVLine(const std::string& line, const std::string& symbol, Bar& outBar);
+    void alignAndPadData(const std::string& symbol, std::map<time_t, Bar>& rawData);
 
     std::map<std::string, int> barIndex; // Tracks where in list
-    bool getNextBar(const std::string& symbol, Bar& outBar); // Get next bar for specific symbol
+    std::set<time_t> unionTimeIndex; // Distinct dates for all symbols (alignment purposes)
+
 };

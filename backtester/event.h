@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <chrono>
+#include <ctime>
 #include <algorithm>
 
 enum class EventType {
@@ -63,12 +63,11 @@ class SignalEvent : public Event {
     signalType - 'LONG' or 'SHORT'.
     */
    
-    SignalEvent(const std::string& symbol, std::chrono::system_clock::time_point datetime, 
-      SignalType signalType);
+    SignalEvent(const std::string& symbol, time_t datetime, SignalType signalType);
     EventType getEventType() const override;
 
     std::string symbol;
-    std::chrono::system_clock::time_point datetime;
+    time_t datetime;
     SignalType signalType;
 };
 
@@ -120,14 +119,14 @@ class FillEvent : public Event {
     fill_cost - The holdings value in dollars.
     commission - An optional commission sent from IB.
     */
-    FillEvent(std::chrono::system_clock::time_point timeIndex, std::string symbol,
+    FillEvent(time_t timeIndex, std::string symbol,
     std::string exchange, unsigned long quantity, DirectionType direction,
     long double fillCost, long double commission = 0);
     EventType getEventType() const override;
 
     static double calcCommission(unsigned long quantity, long double fillCost);
 
-    std::chrono::system_clock::time_point timeIndex;
+    time_t timeIndex;
     std::string symbol;
     std::string exchange;
     unsigned long quantity;

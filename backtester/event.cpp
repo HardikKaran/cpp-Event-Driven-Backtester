@@ -8,7 +8,7 @@ EventType MarketEvent::getEventType() const {
  
 // SignalEvent instantiated
 SignalEvent::SignalEvent(const std::string& symbol, 
-  std::chrono::system_clock::time_point datetime, SignalType signalType) 
+  time_t datetime, SignalType signalType) 
 : symbol(symbol), datetime(datetime), signalType(signalType) {}
 EventType SignalEvent::getEventType() const {
   return EventType::SIGNAL; // Override 
@@ -46,7 +46,7 @@ double FillEvent::calcCommission(unsigned long quantity, long double fillCost) {
 }
 
 // FillEvent instantiated
-FillEvent::FillEvent(std::chrono::system_clock::time_point timeIndex, std::string symbol,
+FillEvent::FillEvent(time_t timeIndex, std::string symbol,
   std::string exchange, unsigned long quantity, DirectionType direction,
   long double fillCost, long double commission) 
 : timeIndex(timeIndex), symbol(symbol), exchange(exchange), quantity(quantity), 

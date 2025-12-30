@@ -2,60 +2,60 @@
 
 // MarketEvent instantiated
 MarketEvent::MarketEvent() {}
-EventType MarketEvent::getEventType() const { 
-  return EventType::MARKET; 
+EventType MarketEvent::getEventType() const {
+    return EventType::MARKET;
 }
- 
+
 // SignalEvent instantiated
-SignalEvent::SignalEvent(const std::string& symbol, 
-  time_t datetime, SignalType signalType) 
-: symbol(symbol), datetime(datetime), signalType(signalType) {}
+SignalEvent::SignalEvent(const std::string &symbol,
+                         time_t datetime, SignalType signalType)
+    : symbol(symbol), datetime(datetime), signalType(signalType) {}
 EventType SignalEvent::getEventType() const {
-  return EventType::SIGNAL; // Override 
+    return EventType::SIGNAL; // Override
 }
 
 // OrderEvent instantiated
-OrderEvent::OrderEvent(const std::string& symbol, OrderType orderType, 
-  unsigned long quantity, DirectionType direction)
-: symbol(symbol), orderType(orderType), quantity(quantity), direction(direction) {}
+OrderEvent::OrderEvent(const std::string &symbol, OrderType orderType,
+                       unsigned long quantity, DirectionType direction)
+    : symbol(symbol), orderType(orderType), quantity(quantity), direction(direction) {}
 EventType OrderEvent::getEventType() const {
-  return EventType::ORDER;
+    return EventType::ORDER;
 }
 
-// Commission calculation 
+// Commission calculation
 double FillEvent::calcCommission(unsigned long quantity, long double fillCost) {
-  /*
-  Calculates the fees of trading based on Interactive Brokers 
-  'Fixed' pricing for US Stocks (SmartRouted).
-  
-  Source: https://www.interactivebrokers.com/en/pricing/commissions-stocks.php
-  */
+    /*
+    Calculates the fees of trading based on Interactive Brokers
+    'Fixed' pricing for US Stocks (SmartRouted).
 
-  double commPerShare = 0.005;
-  double minComm = 1.00;
-  double maxPercent = 1.0;
+    Source: https://www.interactivebrokers.com/en/pricing/commissions-stocks.php
+    */
 
-  double baseComm = std::max(minComm, commPerShare * quantity);
+    double commPerShare = 0.005;
+    double minComm = 1.00;
+    double maxPercent = 1.0;
 
-  double tradeVal = quantity * fillCost;
-  double maxCost = (maxPercent / 100.0) * tradeVal;
+    double baseComm = std::max(minComm, commPerShare * quantity);
 
-  double fullCost = std::min(baseComm, maxCost);
+    double tradeVal = quantity * fillCost;
+    double maxCost = (maxPercent / 100.0) * tradeVal;
 
-  return fullCost;
+    double fullCost = std::min(baseComm, maxCost);
+
+    return fullCost;
 }
 
 // FillEvent instantiated
 FillEvent::FillEvent(time_t timeIndex, std::string symbol,
-  std::string exchange, unsigned long quantity, DirectionType direction,
-  long double fillCost, long double commission) 
-: timeIndex(timeIndex), symbol(symbol), exchange(exchange), quantity(quantity), 
-direction(direction), fillCost(fillCost), commission(commission) {
-  if(this->commission == 0) {
-    this->commission = calcCommission(quantity,fillCost);
-  }
+                     std::string exchange, unsigned long quantity, DirectionType direction,
+                     long double fillCost, long double commission)
+    : timeIndex(timeIndex), symbol(symbol), exchange(exchange), quantity(quantity),
+      direction(direction), fillCost(fillCost), commission(commission) {
+    if (this->commission == 0) {
+        this->commission = calcCommission(quantity, fillCost);
+    }
 }
 
 EventType FillEvent::getEventType() const {
-  return EventType::FILL;
+    return EventType::FILL;
 }

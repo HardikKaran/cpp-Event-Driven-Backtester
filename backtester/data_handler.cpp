@@ -36,4 +36,31 @@ HistoricCSVDataHandler::HistoricCSVDataHandler(std::queue<std::shared_ptr<Event>
     return std::vector<Bar> (bars.end() - N, bars.end());
   }
 
-  
+void HistoricCSVDataHandler::updateBars() {
+  bool newBarAdd = false;
+
+  for (const auto& s : symbolList) {
+    // Check if end of data reached for symbol s
+    if (barIndex[s] >= symbolData[s].size()) {
+      continue;
+    }
+
+    // Get next bar from symbolData
+    Bar bar = symbolData[s][barIndex[s]];
+
+    // Push bar to live simulation
+    latestSymbolData[s].push_back(bar);
+
+    barIndex[s]++;
+    newBarAdd = true;
+  }
+
+  // If at least one symbol had a new bar, push a MarketEvent
+  if (newBarAdd) {
+    events.push(std::shared_ptr<MarketEvent>());
+  }
+  else {
+    contBacktest = false; // No more data left 
+  }
+}
+

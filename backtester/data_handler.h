@@ -82,5 +82,5 @@ private:
     void alignAndPadData(const std::string &symbol, std::map<time_t, Bar> &rawData);
 
     std::map<std::string, int> barIndex; // Tracks where in list
-    std::set<time_t> unionTimeIndex;     // Distinct dates for all symbols (alignment purposes)
+    std::set<time_t> timeIndexSet;     // Distinct dates for all symbols (alignment purposes)
 };

@@ -38,7 +38,7 @@ std::vector<Bar> HistoricCSVDataHandler::getLatestBars(std::string symbol, int N
 void HistoricCSVDataHandler::updateBars() {
     bool newBarAdd = false;
 
-    for (const auto &s : symbolList) {
+    for (const auto& s : symbolList) {
         // Check if end of data reached for symbol s
         if (barIndex[s] >= symbolData[s].size()) {
             continue;
@@ -64,5 +64,34 @@ void HistoricCSVDataHandler::updateBars() {
 }
 
 void HistoricCSVDataHandler::openConvertCSVFiles() {
-    
+    // Temp storage: symbol -> (date -> bar)
+    std::map<std::string, std::map<time_t, Bar>> rawDataStore;
+
+    // Read files + build master index
+    for (const auto& s : symbolList) {
+        std::string filePath = csvDir + "/" + s + ".csv";
+        std::ifstream file(filePath);
+
+        if (!file.is_open()) {
+            std::cerr << "Error opening file" << std::endl;
+            continue;
+        }
+
+        std::string line;
+        std::getline(file, line); // Skip header line
+
+        while (std::getline(file, line)) {
+            Bar bar;
+            if (parseCSVLine(line, s, bar)) {
+                rawDataStore[s][bar.date] = bar;
+                timeIndexSet.insert(bar.date); // Add unique date to set
+            }
+        }
+        file.close();
+    }
+
+    // Convert to dataframe like pandas
+    for (const auto& symbol : symbolList) {
+        alignAndPadData(symbol, rawDataStore[symbol]);
+    }
 }

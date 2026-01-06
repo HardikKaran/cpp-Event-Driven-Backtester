@@ -62,3 +62,7 @@ void HistoricCSVDataHandler::updateBars() {
         contBacktest = false; // No more data left
     }
 }
+
+void HistoricCSVDataHandler::openConvertCSVFiles() {
+    
+}

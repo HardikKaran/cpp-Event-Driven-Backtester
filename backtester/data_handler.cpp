@@ -95,3 +95,7 @@ void HistoricCSVDataHandler::openConvertCSVFiles() {
         alignAndPadData(symbol, rawDataStore[symbol]);
     }
 }
+
+bool HistoricCSVDataHandler::parseCSVLine(const std::string& line, const std::string& symbol, Bar& outBar) {
+    
+}

@@ -105,5 +105,33 @@ bool HistoricCSVDataHandler::parseCSVLine(const std::string& line, const std::st
     while (std::getline(ss, segment, ',')) {
         row.push_back(segment);
     }
-    
+
+    // Expecting: Date, Open, High, Low, Close, Adj Close, Volume
+    if (row.size() < 7) {
+        return false;
+    }
+
+    try {
+        outBar.symbol = symbol;
+
+        // Parse Date (YYYY-MM-DD)
+        std::tm tm {};
+        std::stringstream dateSS(row[0]);
+        dateSS >> std::get_time(&tm, "%Y-%m-%d");
+        outBar.date = std::mktime(&tm);
+
+        // Parse Bar values
+        outBar.open     = std::stod(row[1]);
+        outBar.high     = std::stod(row[2]);
+        outBar.low      = std::stod(row[3]);
+        outBar.close    = std::stod(row[4]);
+        outBar.adjClose = std::stod(row[5]);
+        outBar.vol      = std::stol(row[6]);
+        outBar.returns  = 0.0; // Calculated later
+
+        return true;
+
+    } catch (...) { // Forwars the unknown number of arguements 
+        return false;
+    }
 }

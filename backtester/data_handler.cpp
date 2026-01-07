@@ -97,5 +97,13 @@ void HistoricCSVDataHandler::openConvertCSVFiles() {
 }
 
 bool HistoricCSVDataHandler::parseCSVLine(const std::string& line, const std::string& symbol, Bar& outBar) {
+    std::stringstream ss(line);
+    std::string segment;
+    std::vector<std::string> row;
+
+    // Add row values to vector from a row in the csv
+    while (std::getline(ss, segment, ',')) {
+        row.push_back(segment);
+    }
     
 }

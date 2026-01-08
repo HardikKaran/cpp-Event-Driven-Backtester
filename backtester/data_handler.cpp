@@ -135,3 +135,32 @@ bool HistoricCSVDataHandler::parseCSVLine(const std::string& line, const std::st
         return false;
     }
 }
+
+void HistoricCSVDataHandler::alignAndPadData(const std::string& symbol, std::map<time_t, Bar>& rawTempData) {
+    std::vector<Bar>& finalBars = symbolData[symbol];
+    Bar previousBar = {};
+    bool firstBarFound = false;
+
+    // Iterate through the set of all dates in masterTimeIndex
+    for (time_t date : timeIndexSet) {
+        Bar currentBar;
+
+        // Case A: Data exists for this date
+        if (rawTempData.count(date)) {
+            currentBar = rawTempData[date];
+            
+            // Calculate Returns
+            if (firstBarFound) {
+                currentBar.returns = (currentBar.adjClose - previousBar.adjClose) / previousBar.adjClose;
+            } else {
+                currentBar.returns = 0.0;
+            }
+
+            previousBar = currentBar;
+            firstBarFound = true;
+            finalBars.push_back(currentBar);
+        }
+    }
+
+    
+}

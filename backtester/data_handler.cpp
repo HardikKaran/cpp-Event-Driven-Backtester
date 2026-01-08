@@ -160,6 +160,21 @@ void HistoricCSVDataHandler::alignAndPadData(const std::string& symbol, std::map
             firstBarFound = true;
             finalBars.push_back(currentBar);
         }
+
+        // Case B: Data missing -> Pad Forward
+        else if (firstBarFound) {
+            currentBar = previousBar;
+            currentBar.date = date; // Update date to current union date
+            currentBar.returns = 0.0; // No price change
+            
+            finalBars.push_back(currentBar);
+            // Previous bar remains the same
+        }
+
+        // Case C: Missing data BEFORE the first bar exists (e.g. Google didn't exist in 1990)
+        else {
+            // Do nothing
+        }
     }
 
     

@@ -18,7 +18,7 @@ int main() {
     std::cout << "-----Starting Data Handler-----" << std::endl;
 
     // Creates DataHandler object and trigger opening of csv files
-    HistoricCSVDataHandler DataHandler(events, csvDir, symbolList);
+    HistoricCSVDataHandler dataHandler(events, csvDir, symbolList);
 
     std::cout << "-----Data Handler object created-----" << std::endl;
     std::cout << "-----Starting Backtest loop-----" << std::endl;
@@ -28,7 +28,7 @@ int main() {
         std::cout << "Row: " << i + 1 << ", Updating bars" << std::endl;
 
         // Handler ticks forward
-        DataHandler.updateBars();
+        dataHandler.updateBars();
 
         // Check if Handler pushed event to queue
         if (!events.empty()) {
@@ -41,7 +41,7 @@ int main() {
                 std::cout << "-----Market Event-----" << std::endl;
 
                 // Get the latest data from DataHandler (future implementation with Strategy)
-                std::vector<Bar> latestBars = DataHandler.getLatestBars("AAPL");
+                std::vector<Bar> latestBars = dataHandler.getLatestBars("AAPL");
 
                 // Display latest bar's values
                 if (!latestBars.empty()) {

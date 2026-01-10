@@ -1,5 +1,4 @@
 #pragma once
-#include <event.h>
 
 #include <vector>
 #include <map>
@@ -8,6 +7,8 @@
 #include <memory>
 #include <ctime>
 #include <set>
+
+#include "event.h"
 
 struct Bar {
     std::string symbol;

@@ -1,11 +1,11 @@
-#include <data_handler.h>
-
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
 #include <utility>
 #include <fstream>
 #include <sstream>
+
+#include "data_handler.h"
 
 HistoricCSVDataHandler::HistoricCSVDataHandler(std::queue<std::shared_ptr<Event>> &events,
                                                std::string csvDir, std::vector<std::string> symbolList)

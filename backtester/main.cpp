@@ -57,7 +57,7 @@ int main() {
         else {
             std::cout << "-----No Events-----" << std::endl;
         }
-
-        return 0;
     }
+
+    return 0;
 }

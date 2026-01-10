@@ -56,7 +56,7 @@ void HistoricCSVDataHandler::updateBars() {
 
     // If at least one symbol had a new bar, push a MarketEvent
     if (newBarAdd) {
-        events.push(std::shared_ptr<MarketEvent>());
+        events.push(std::make_shared<MarketEvent>());
     }
     else {
         contBacktest = false; // No more data left

@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 
-#include <event.h>
-#include <data_handler.h>
+#include "event.h"
+#include "data_handler.h"
 
 int main() {
     // Create event queue for communication with the system

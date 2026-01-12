@@ -24,5 +24,35 @@ class Strategy {
     */
 public:
     virtual ~Strategy() = default;
+
+    // Provides mechanisms to calculate the list of signals.
     virtual void calculateSignals() = 0;
+};
+
+class BuyAndHoldStrategy : public Strategy {
+    /*
+    This is an extremely simple strategy that goes LONG all of the 
+    symbols as soon as a bar is received. It will never exit a position.
+
+    It is primarily used as a testing mechanism for the Strategy class
+    as well as a benchmark upon which to compare other strategies.
+    */
+public:
+    /*
+    Parameters:
+    bars - The DataHandler object that provides bar information
+    events - The Event Queue object.
+    */
+    BuyAndHoldStrategy(DataHandler* data, std::queue<std::shared_ptr<Event>>& events);
+
+    void calculateSignals() override;
+
+private:
+    DataHandler* data;
+    std::queue<std::shared_ptr<Event>>& events;
+    std::vector<std::string> symbolList; // Local copy good for caching purposes
+    std::map<std::string, bool> boughtStatus;
+
+    // Once buy & hold signal is given, these are set to True
+    void calculateInitialBought();
 };

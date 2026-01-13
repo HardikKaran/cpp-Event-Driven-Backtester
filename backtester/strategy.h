@@ -43,7 +43,9 @@ public:
     bars - The DataHandler object that provides bar information
     events - The Event Queue object.
     */
-    BuyAndHoldStrategy(DataHandler* data, std::queue<std::shared_ptr<Event>>& events);
+    BuyAndHoldStrategy(DataHandler* data, 
+                        std::queue<std::shared_ptr<Event>>& events,
+                        std::vector<std::string> symbolList);
 
     void calculateSignals() override;
 

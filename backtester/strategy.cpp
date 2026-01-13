@@ -7,9 +7,7 @@ BuyAndHoldStrategy::BuyAndHoldStrategy(DataHandler* data,
                                        std::vector<std::string> symbolList)
 
     : data(data), events(events), symbolList(symbolList) {
-        for (const auto& s : symbolList) {
-            boughtStatus[s] = false;
-        }
+        calculateInitialBought();
     }
 
 void BuyAndHoldStrategy::calculateSignals() {
@@ -21,6 +19,7 @@ void BuyAndHoldStrategy::calculateSignals() {
 
     Called in main.cpp when MarketEvent occurred
     */
+   
     for (const auto& s : symbolList) {
         std::vector<Bar> bars = data->getLatestBars(s, 1);
 
@@ -40,5 +39,16 @@ void BuyAndHoldStrategy::calculateSignals() {
                 std::cout << "LONG " << s << " at " << latestBar.close << std::endl;
             }
         }
+    }
+}
+
+void BuyAndHoldStrategy::calculateInitialBought() {
+    /*
+    Adds keys to the bought dictionary for all symbols
+    and sets them to False.
+    */
+   
+    for (const auto& s : symbolList) {
+        boughtStatus[s] = false;
     }
 }

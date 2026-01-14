@@ -6,6 +6,7 @@
 
 #include "event.h"
 #include "data_handler.h"
+#include "strategy.h"
 
 int main() {
     // Create event queue for communication with the system
@@ -20,7 +21,9 @@ int main() {
     // Creates DataHandler object and trigger opening of csv files
     HistoricCSVDataHandler dataHandler(events, csvDir, symbolList);
 
-    std::cout << "-----Data Handler object created-----" << std::endl;
+    std::cout << "-----Initialising Strategy-----" << std::endl;
+    BuyAndHoldStrategy strategy(&dataHandler, events, symbolList);
+
     std::cout << "-----Starting Backtest loop-----" << std::endl;
 
     // Run simulation loop
@@ -31,7 +34,8 @@ int main() {
         dataHandler.updateBars();
 
         // Check if Handler pushed event to queue
-        if (!events.empty()) {
+        // while loop ensures Market events processed in parallel
+        while (!events.empty()) {
             // Get event from front of queue
             std::shared_ptr<Event> event = events.front();
             events.pop();
@@ -51,12 +55,26 @@ int main() {
                     std::cout << "Close: " << bar.close << std::endl;
                     std::cout << "Returns: " << bar.returns << std::endl;
                 }
+
+                // Test strategy on data
+                strategy.calculateSignals();
+            }
+
+            else if (event->getEventType() == EventType::SIGNAL) {
+                std::cout << "-----Signal Event Generated-----" << std::endl;
+
+                // Compiler doesnt recognise separate Event objects
+                // downcast to detect type at runtime 
+                auto signal = std::dynamic_pointer_cast<SignalEvent> (event);
+                if (signal) {
+                    // Buy LONG otherwise SHORT
+                    std::cout << (signal->signalType == SignalType::LONG ? "BUY (Long)" : "SELL (Short)") 
+                                << " " << signal->symbol <<std::endl;
+                }
             }
         }
 
-        else {
-            std::cout << "-----No Events-----" << std::endl;
-        }
+        std::cout << "-----No Events-----" << std::endl;
     }
 
     return 0;

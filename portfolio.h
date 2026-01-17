@@ -31,3 +31,49 @@ public:
     */
     virtual void updateFill(std::shared_ptr<FillEvent> event) = 0;
 };
+
+class NaivePortfolio : public Portfolio {
+    /*
+    The NaivePortfolio object is designed to send orders to
+    a brokerage object with a constant quantity size blindly,
+    i.e. without any risk management or position sizing. It is
+    used to test simpler strategies such as BuyAndHoldStrategy.
+    */
+public:
+    /*
+    Parameters:
+    bars - The DataHandler object with current market data.
+    events - The Event Queue object.
+    startDate - The start date (bar) of the portfolio.
+    initialCapital - The starting capital in USD.
+    */
+    NaivePortfolio(DataHandler* bars, 
+                   std::queue<std::shared_ptr<Event>>& events, 
+                   std::string startDate, 
+                   double initialCapital = 100000.0);
+
+    // Override the pure virtual functions
+    void updateSignal(std::shared_ptr<SignalEvent> event) override;
+    void updateFill(std::shared_ptr<FillEvent> event) override;
+
+    // For equity history if needed later
+    // std::vector<std::map<std::string, double>>& getHistory();
+
+private:
+    DataHandler* bars;
+    std::queue<std::shared_ptr<Event>>& events;
+    std::vector<std::string> symbolList;
+    std::string startDate;
+    double initialCapital;
+    
+    std::map<std::string, long> currentPositions;
+    std::vector<std::map<std::string, long>> allPositions;
+
+    std::map<std::string, double> currentHoldings;
+    std::vector<std::map<std::string, double>> allHoldings;
+
+    void constructAllPositions();
+    void constructAllHoldings();
+    void constructCurrentHoldings();
+
+};

@@ -75,5 +75,4 @@ private:
     void constructAllPositions();
     void constructAllHoldings();
     void constructCurrentHoldings();
-
 };

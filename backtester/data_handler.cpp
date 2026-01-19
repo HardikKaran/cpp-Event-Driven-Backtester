@@ -176,6 +176,8 @@ void HistoricCSVDataHandler::alignAndPadData(const std::string& symbol, std::map
             // Do nothing
         }
     }
+}
 
-    
+std::vector<std::string> HistoricCSVDataHandler::getSymbolList() {
+    return symbolList;
 }

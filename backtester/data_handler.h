@@ -46,6 +46,9 @@ public:
     for all symbols in the symbol list.
     */
     virtual void updateBars() = 0;
+
+    // System can find what symbol its trading
+    virtual std::vector<std::string> getSymbolList() = 0;
 };
 
 class HistoricCSVDataHandler : public DataHandler {
@@ -69,6 +72,8 @@ public:
 
     void updateBars() override;
 
+    std::vector<std::string> getSymbolList() override;
+    
 private:
     std::queue<std::shared_ptr<Event>> &events;
     std::string csvDir;

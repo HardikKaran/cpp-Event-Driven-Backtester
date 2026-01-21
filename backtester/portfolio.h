@@ -56,6 +56,14 @@ public:
     void updateSignal(std::shared_ptr<SignalEvent> event) override;
     void updateFill(std::shared_ptr<FillEvent> event) override;
 
+    /*
+    Adds a new record to the positions matrix for the current 
+    market data bar. This reflects the PREVIOUS bar, i.e. all
+    current market data at this stage is known (OLHCVI).
+    Makes use of a MarketEvent from the events queue.
+    */
+    void updateTimeIndex(std::shared_ptr<Event> event);
+
     // For equity history if needed later
     // std::vector<std::map<std::string, double>>& getHistory();
 
@@ -72,7 +80,48 @@ private:
     std::map<std::string, double> currentHoldings;
     std::vector<std::map<std::string, double>> allHoldings;
 
+    /*
+    Constructs the holdings list using the start_date
+    to determine when the time index will begin.
+    */
     void constructAllPositions();
+
+    /*
+    Constructs the holdings list using the start_date
+    to determine when the time index will begin.
+    */
     void constructAllHoldings();
+
+    /*
+    This constructs the dictionary which will hold the instantaneous
+    value of the portfolio across all symbols.
+    */
     void constructCurrentHoldings();
+
+    /*
+    Takes a FilltEvent object and updates the position matrix
+    to reflect the new position.
+    Parameters:
+    fill - The FillEvent object to update the positions with.
+    */
+    void updatePositionsFromFill(std::shared_ptr<FillEvent> fill);
+
+    /*
+    Takes a FillEvent object and updates the holdings matrix
+    to reflect the holdings value.
+
+    Parameters:
+    fill - The FillEvent object to update the holdings with.
+    */
+    void updateHoldingsFromFill(std::shared_ptr<FillEvent> fill);
+
+    /*
+    Simply transacts an OrderEvent object as a constant quantity
+    sizing of the signal object, without risk management or
+    position sizing considerations.
+
+    Parameters:
+    signal - The SignalEvent signal information.
+    */
+   void generateNaiveOrder(std::shared_ptr<SignalEvent> signal);
 };

@@ -28,16 +28,6 @@ void NaivePortfolio::constructAllPositions() {
     allPositions.push_back(initialPos);
 }
 
-void NaivePortfolio::constructCurrentHoldings() {
-    for (const auto& sL : symbolList) {
-        currentHoldings[sL] = 0.0;
-    }
-
-    currentHoldings["cash"] = initialCapital;
-    currentHoldings["commission"] = 0.0;
-    currentHoldings["total"] = initialCapital;
-}
-
 void NaivePortfolio::constructAllHoldings() {
     std::map<std::string, double> initialHoldings;
 
@@ -51,3 +41,14 @@ void NaivePortfolio::constructAllHoldings() {
 
     allHoldings.push_back(initialHoldings);
 }
+
+void NaivePortfolio::constructCurrentHoldings() {
+    for (const auto& sL : symbolList) {
+        currentHoldings[sL] = 0.0;
+    }
+
+    currentHoldings["cash"] = initialCapital;
+    currentHoldings["commission"] = 0.0;
+    currentHoldings["total"] = initialCapital;
+}
+

@@ -10,7 +10,7 @@ NaivePortfolio::NaivePortfolio(DataHandler* bars,
 
     this->symbolList = bars->getSymbolList(); 
 
-    // Initialize the tracking containers
+    // Initialise the tracking containers
     constructAllPositions();
     constructCurrentHoldings();
     constructAllHoldings();
@@ -50,5 +50,38 @@ void NaivePortfolio::constructCurrentHoldings() {
     currentHoldings["cash"] = initialCapital;
     currentHoldings["commission"] = 0.0;
     currentHoldings["total"] = initialCapital;
+}
+
+void NaivePortfolio::updateTimeIndex(std::shared_ptr<Event> event) {
+    // Grab the latest bars for each symbol
+    std::map<std::string, std::vector<Bar>> latestBars;
+    for (const auto& s : symbolList) {
+        latestBars[s] = bars->getLatestBars(s, 1);
+    }
+
+    // Update positions
+    std::map<std::string, long> dp;
+    for (const auto& s : symbolList) {
+        dp[s] = currentPositions[s];
+    }
+    allPositions.push_back(dp);
+
+    // Update holdings
+    std::map<std::string, double> dh;
+    for (const auto& s : symbolList) {
+        dh[s] = 0.0;
+    }
+    dh["cash"] = currentHoldings["cash"];
+    dh["commission"] = currentHoldings["commission"];
+    dh["total"] = currentHoldings["cash"];
+
+    for (const auto& s : symbolList) {
+        // Approximation to the real value
+        double marketValue = currentPositions[s] * latestBars[s][0].adjClose;
+        dh[s] = marketValue;
+        dh["total"] += marketValue;
+    }
+
+    allHoldings.push_back(dh);
 }
 

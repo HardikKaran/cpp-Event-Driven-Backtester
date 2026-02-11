@@ -85,3 +85,17 @@ void NaivePortfolio::updateTimeIndex(std::shared_ptr<Event> event) {
     allHoldings.push_back(dh);
 }
 
+void NaivePortfolio::updatePositionsFromFill(std::shared_ptr<FillEvent> fill) {
+    // Check whether the fill is a buy or sell
+    int fillDir = 0;
+    if (fill->direction == DirectionType::BUY) {
+        fillDir = 1;
+    }
+    if (fill->direction == DirectionType::SELL) {
+        fillDir = -1;
+    }
+
+    // Update positions list with new quantities
+    currentPositions[fill->symbol] += fillDir * static_cast<long>(fill->quantity);
+}
+

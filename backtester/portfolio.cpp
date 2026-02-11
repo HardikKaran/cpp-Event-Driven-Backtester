@@ -99,3 +99,20 @@ void NaivePortfolio::updatePositionsFromFill(std::shared_ptr<FillEvent> fill) {
     currentPositions[fill->symbol] += fillDir * static_cast<long>(fill->quantity);
 }
 
+void NaivePortfolio::updateHoldingsFromFill(std::shared_ptr<FillEvent> fill) {
+    int fillDir = 0;
+    if (fill->direction == DirectionType::BUY) {
+        fillDir = 1;
+    }
+    if (fill->direction == DirectionType::SELL) {
+        fillDir = -1;
+    }
+
+    // Update holdings list with new quantities
+    double fillCost = bars->getLatestBars(fill->symbol)[0].adjClose; // Close price
+    double cost = fillDir * fillCost * fill->quantity;
+    currentHoldings[fill->symbol] += cost;
+    currentHoldings["commission"] += fill->commission;
+    currentHoldings["cash"] -= (cost + fill->commission);
+    currentHoldings["total"] -= (cost + fill->commission);
+}

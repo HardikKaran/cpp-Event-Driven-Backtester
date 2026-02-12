@@ -116,3 +116,10 @@ void NaivePortfolio::updateHoldingsFromFill(std::shared_ptr<FillEvent> fill) {
     currentHoldings["cash"] -= (cost + fill->commission);
     currentHoldings["total"] -= (cost + fill->commission);
 }
+
+void NaivePortfolio::updateFill(std::shared_ptr<FillEvent> event) {
+    if (event->getEventType() == EventType::FILL) {
+        updatePositionsFromFill(event);
+        updateHoldingsFromFill(event);
+    }
+}

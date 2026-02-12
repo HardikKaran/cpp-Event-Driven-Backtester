@@ -152,3 +152,35 @@ void NaivePortfolio::generateNaiveOrder(std::shared_ptr<SignalEvent> signal) {
         events.push(order);
     }
 }
+
+void NaivePortfolio::updateSignal(std::shared_ptr<SignalEvent> event) {
+    if (event->getEventType() == EventType::SIGNAL) {
+        generateNaiveOrder(event);
+    }
+}
+
+void NaivePortfolio::createEquityCurveDataframe() {
+    equityCurve.clear();
+
+    for (size_t i = 0; i < allHoldings.size(); i++) {
+        double total = allHoldings[i]["total"];
+        double returns = 0.0;
+        double equityCurveVal = 1.0;
+
+        if (i > 0) {
+            double prevTotal = allHoldings[i - 1]["total"];
+            returns = (prevTotal != 0.0) ? (total - prevTotal) / prevTotal : 0.0;
+        }
+
+        if (i > 0) {
+            equityCurveVal = equityCurve[i - 1]["equity_curve"] * (1.0 + returns);
+        }
+
+        std::map<std::string, double> row;
+        row["total"] = total;
+        row["returns"] = returns;
+        row["equity_curve"] = equityCurveVal;
+        equityCurve.push_back(row);
+    }
+}
+

@@ -64,8 +64,13 @@ public:
     */
     void updateTimeIndex(std::shared_ptr<Event> event);
 
-    // For equity history if needed later
-    // std::vector<std::map<std::string, double>>& getHistory();
+    /*
+    Creates an equity curve from the all_holdings
+    list of maps. Computes returns and cumulative equity curve.
+    */
+    void createEquityCurveDataframe();
+
+    std::vector<std::map<std::string, double>> equityCurve;
 
 private:
     DataHandler* bars;

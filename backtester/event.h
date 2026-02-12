@@ -13,7 +13,8 @@ enum class EventType {
 
 enum class SignalType {
     LONG,
-    SHORT
+    SHORT,
+    EXIT
 };
 
 enum class OrderType {

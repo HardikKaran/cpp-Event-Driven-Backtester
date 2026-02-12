@@ -123,3 +123,32 @@ void NaivePortfolio::updateFill(std::shared_ptr<FillEvent> event) {
         updateHoldingsFromFill(event);
     }
 }
+
+void NaivePortfolio::generateNaiveOrder(std::shared_ptr<SignalEvent> signal) {
+    std::string symbol = signal->symbol;
+    SignalType direction = signal->signalType;
+
+    unsigned long mktQuantity = 100;  // Constant quantity (no strength field)
+    long curQuantity = currentPositions[symbol];
+    OrderType orderType = OrderType::MKT;
+
+    std::shared_ptr<OrderEvent> order = nullptr;
+
+    if (direction == SignalType::LONG && curQuantity == 0) {
+        order = std::make_shared<OrderEvent>(symbol, orderType, mktQuantity, DirectionType::BUY);
+    }
+    if (direction == SignalType::SHORT && curQuantity == 0) {
+        order = std::make_shared<OrderEvent>(symbol, orderType, mktQuantity, DirectionType::SELL);
+    }
+
+    if (direction == SignalType::EXIT && curQuantity > 0) {
+        order = std::make_shared<OrderEvent>(symbol, orderType, static_cast<unsigned long>(std::abs(curQuantity)), DirectionType::SELL);
+    }
+    if (direction == SignalType::EXIT && curQuantity < 0) {
+        order = std::make_shared<OrderEvent>(symbol, orderType, static_cast<unsigned long>(std::abs(curQuantity)), DirectionType::BUY);
+    }
+
+    if (order != nullptr) {
+        events.push(order);
+    }
+}

@@ -32,3 +32,37 @@ public:
     */
     virtual void executeOrder(std::shared_ptr<OrderEvent> event) = 0;
 };
+
+class SimulatedExecutionHandler : public Execution {
+    /*
+    The simulated execution handler simply converts all order
+    objects into their equivalent fill objects automatically
+    without latency, slippage or fill-ratio issues.
+
+    This allows a straightforward "first go" test of any strategy,
+    before implementation with a more sophisticated execution
+    handler.
+    */
+
+public:
+    /*
+    Initialises the handler, setting the event queues
+    up internally.
+
+    Parameters:
+    events - The Queue of Event objects.
+    */
+    SimulatedExecutionHandler(std::queue<std::shared_ptr<Event>>& events);
+
+    /*
+    Simply converts Order objects into Fill objects naively,
+    i.e. without any latency, slippage or fill ratio problems.
+
+    Parameters:
+    event - Contains an Event object with order information.
+    */
+    void executeOrder(std::shared_ptr<OrderEvent> event) override;
+
+private:
+    std::queue<std::shared_ptr<Event>>& events;
+};
